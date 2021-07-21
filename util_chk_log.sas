@@ -2,7 +2,7 @@
 /* This macro utility will be used to check log file for        */
 /* non acceptable log notes within the log                      */
 /***************************************************************/
-%MACRO util_logcheck(log=,level=16);
+%MACRO util_chk_log(log=,level=16);
 OPTIONS MPRINT;
 
 %PUT ;
@@ -68,5 +68,5 @@ OPTIONS MPRINT;
   %PUT Completed SCAN of &log: there were &N_ occurrences;
   %PUT;
   %*USAGE: scanlog(log=logfilename.log,level=6);
-%NMEND;
-%util_logcheck(log=<YOUR file path>/<log file name>.log,level=6);
+%NMEND util_chk_log;
+%util_chk_log(log=<YOUR file path>/<log file name>.log,level=6);
