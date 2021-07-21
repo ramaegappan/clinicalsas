@@ -2,7 +2,7 @@
 /* This macro utility will be used to check your current        */
 /* SAS session and its platform                                 */
 /***************************************************************/
-%MACRO check_your_sas;
+%MACRO util_chk_env;
    %IF %symexist(_clientapp) %THEN %DO;
     %IF &_clientapp = 'SAS Studio' %THEN %DO;
       %PUT Running SAS Studio;
@@ -18,4 +18,4 @@
      %LET prog=%qscan(%superq(sysprocessname),2,%str( ));
      %PUT Running in batch and the program running is &prog;
   %END;
-%MEND check_your_sas;
+%MEND util_chk_env;
