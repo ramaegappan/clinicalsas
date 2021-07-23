@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Task runNLS="never" schemaVersion="5.3">
+    <Registration>
+        <Name>Manage file under RCS</Name>
+        <Description>This utility can be use to create a RCS friendly SAS program template or Check-in, Check-out SAS program, SAS Dataset or any file</Description>
+        <GUID>  </GUID>
+        <Procedures>TBD</Procedures>
+        <Version>3.71</Version>
+        <Links>
+            <Link href="https://en.wikipedia.org/wiki/Revision_Control_System">RCS Wiki</Link>
+            <Link href="https://www.gnu.org/software/rcs">RCS Home Page</Link>
+            <Link href="https://www.gnu.org/software/rcs/manual/rcs.pdf">RCS UMAN</Link>
+        </Links>
+        <Category>CDARS</Category>
+    </Registration>
+    <Metadata>
+        <DataSources/>
+        <Options>
+            <Option defaultValue=""
+                inputType="inputtext"
+                missingMessage="Missing File Location." name="textFLOC"
+                promptMessage="Enter File Location." required="true">File Location:
+			</Option>
+            <Option defaultValue="" inputType="inputtext"
+                missingMessage="Missing File Name." name="textFILE"
+                promptMessage="Enter File Name." required="true">File Name:
+			</Option>
+            <Option defaultValue="1" inputType="radio"
+                name="radioCREATENEW" variable="radioONE">Create Template
+			</Option>
+            <Option inputType="radio" name="radioCHECKOUT" variable="radioONE">File Check-Out
+			</Option>
+            <Option inputType="radio" name="radioCHECKIN" variable="radioONE">File Check-In
+			</Option>
+            <Option
+                defaultValue="Default Comment. Please Enter Check-In Comment"
+                indent="1" inputType="inputtext"
+                missingMessage="Missing File Name." name="textCOMMENT"
+                promptMessage="Enter Check-In Comment." required="false">Check-In Comment:
+			</Option>
+        </Options>
+    </Metadata>
+    <UI>
+        <OptionItem option="textFLOC"/>
+        <OptionItem option="textFILE"/>
+        <OptionItem option="radioCREATENEW"/>
+        <OptionItem option="radioCHECKOUT"/>
+        <OptionItem option="radioCHECKIN"/>
+        <OptionItem option="textCOMMENT"/>
+    </UI>
+    <Dependencies>
+        <Dependency condition="($radioONE == 'radioCHECKIN')">
+            <Target action="show" conditionResult="true" option="textCOMMENT"/>
+            <Target action="hide" conditionResult="false" option="textCOMMENT"/>
+        </Dependency>
+    </Dependencies>
+    <CodeTemplate><![CDATA[
+
+#if($radioONE == "radioCREATENEW")
+	FILENAME SASCODE "$textFLOC/$textFILE";
+
+	DATA _NULL_;
+		FILE SASCODE MOD;
+	
+		PUT @1 "/********************************************************************\"	;
+		PUT @2 " Program	: $Source$"	;
+		PUT @2 " Version	: $Revision$"	;
+		PUT @2 " Date		: $Date$"	;
+		PUT @2 " Programmer	: $Author$"	;
+		PUT @2 "*******************************************************************"	;
+		
+		PUT @2 " *******************************************************************"	;
+		PUT @2 " Modification History:"	;
+		PUT @2 " $Log$"	;
+		PUT @1 "\********************************************************************/"	;
+		PUT @1 "/************************PROGRAM STARTS******************************/"	;
+		
+		PUT @3 " "	;
+		PUT @3 "/* Here is your Code */"	;
+		PUT @3 " "	;
+		
+		PUT @1 "/**************************PROGRAM ENDS******************************/"	;
+		
+	RUN;
+
+	X chmod 775 $textFLOC/$textFILE;
+
+
+#elseif($radioONE == "radioCHECKIN")
+	X ci -m'$textCOMMENT' $textFLOC/$textFILE ;
+	X co -kv $textFLOC/$textFILE;
+
+#elseif($radioONE == "radioCHECKOUT")
+	X co -l $textFLOC/$textFILE;
+
+#end
+
+		]]></CodeTemplate>
+</Task>
