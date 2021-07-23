@@ -1,0 +1,244 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+<Task schemaVersion="5.3" runNLS="never">
+	<Registration>
+	<Name>Explore Data</Name>
+	<Description>This is a blank task</Description>
+	<GUID>    </GUID>
+	<Procedures>TBD</Procedures>
+	<Version>3.71</Version>
+	<Category>Input Data</Category>
+	<Links>
+		<Link href="http://people.apache.org/~henning/velocity/html/index.html">Apache Velocity User Guide</Link>
+		<Link href="https://communities.sas.com/t5/SAS-Communities-Library/Custom-Task-Tuesday-Download-the-Ultimate-Custom-Task-Cheat/ta-p/552910">SAS Custom Task Cheat Sheet</Link>
+	</Links>
+	</Registration>
+	
+	<Metadata>
+		
+		<DataSources>	
+		</DataSources>
+
+		<Options>
+	     	<Option inputType="string" name="optionsTab">Options</Option>
+	     	<!--Container Grouping-->
+	     	<Option inputType="string" name="macroselect">Select Macro Utility</Option>
+	     	<Option inputType="string" name="macverselect">Select Macro Version</Option>
+	     	<Option inputType="string" name="macroinput">Macro Input</Option>
+	     	<Option inputType="string" name="inputstudy">Input Study Information</Option>
+	     	<Option inputType="string" name="datamodel">Select Data Mode</Option>
+	     	<Option inputType="string" name="datalifecycle">Select Data Life Cycle</Option>
+			<!--Radio Buttons for Macro Utility Selection-->
+	    		<Option defaultValue="1" 
+	                    inputType="radio" name="radioCSDW" variable="radioONE">List Data Loction (BA)
+				</Option>
+	    
+	    		<Option inputType="radio" name="radioCSDWBA" variable="radioONE">List Datasets for Given Data Location
+				</Option>
+	        <!--Text Box for Study Information-->
+            <Option defaultValue="Enter Study"
+                inputType="inputtext"
+                missingMessage="Missing Study Information" name="textSTUDY"
+                promptMessage="Enter Study Information" required="true">STUDY:
+			</Option>
+
+	        <!--Radio Button for Macro Version-->
+            <Option defaultValue="1" 
+                    inputType="radio" name="radioSASAUTO" variable="radioMAC">SAS AUTO
+			</Option>
+
+    		<Option inputType="radio" name="radioUPDATED" variable="radioMAC">UPDATED
+			</Option>
+	        <!--Radio Button for Data Model Selection-->
+            <Option defaultValue="1" 
+                    inputType="radio" name="radioSRDMT" variable="radioDATAMOD">SRDMT
+			</Option>
+
+    		<Option inputType="radio" name="radioSRDM" variable="radioDATAMOD">SRDM
+			</Option>
+
+    		<Option inputType="radio" name="radioDATMOTHER" variable="radioDATAMOD">Other
+			</Option>
+
+            <Option defaultValue="INF"
+                inputType="inputtext"
+                missingMessage="Missing Data Model Information" name="textDATMOTHER"
+                promptMessage="Enter Data Model Information" required="true">Other DataModel:
+			</Option>
+	        <!--Radio Button for Data Life Cycle Selection-->
+            <Option defaultValue="1" 
+                    inputType="radio" name="radioPROD" variable="radioDATALC">Production(PROD)
+			</Option>
+    
+    		<Option inputType="radio" name="radioQC" variable="radioDATALC">UAT(QC)
+			</Option>
+
+    		<Option inputType="radio" name="radioDATLCOTHER" variable="radioDATALC">Other
+			</Option>
+
+            <Option defaultValue="QC"
+                inputType="inputtext"
+                missingMessage="Missing Data Life Cycle Information" name="textDATLCOTHER"
+                promptMessage="Enter Data Life Cycle Information" required="true">Other Data Life Cycle:
+			</Option>
+
+
+		</Options>
+		
+	</Metadata>
+	
+	<UI>
+            <Container option="optionsTab">
+            	<Group open="true" option="macroselect">
+			        <OptionItem option="radioCSDW"/>
+        			<OptionItem option="radioCSDWBA"/>
+        		</Group>
+
+            	<Group open="true" option="macverselect">
+			        <OptionItem option="radioSASAUTO"/> 
+        			<OptionItem option="radioUPDATED"/> 
+       			</Group>
+       			
+            	<Group open="true" option="macroinput">
+            		<Group open="true" option="inputstudy">
+			        	<OptionItem option="textSTUDY"/>
+			        </Group>
+			        <Group open="true" option="datamodel">
+				        <OptionItem option="radioSRDMT"/> 
+				        <OptionItem option="radioSRDM"/> 
+				        <OptionItem option="radioDATMOTHER"/>
+				        <OptionItem option="textDATMOTHER"/>
+			    	</Group>
+			        <Group open="true" option="datalifecycle">
+				        <OptionItem option="radioPROD"/> 
+				        <OptionItem option="radioQC"/> 
+				        <OptionItem option="radioDATLCOTHER"/>
+				        <OptionItem option="textDATLCOTHER"/>
+			    	</Group>
+			    </Group>
+        </Container>
+	</UI>
+	
+    <Dependencies>
+        <Dependency condition="($radioONE == 'radioCSDWBA')">
+			<!--Options to enable respective Radio Buttons-->
+            <Target action="show" conditionResult="true" option="radioSASAUTO"/>
+            <Target action="show" conditionResult="true" option="radioUPDATED"/>
+            <Target action="show" conditionResult="true" option="radioSRDMT"/>
+            <Target action="show" conditionResult="true" option="radioSRDM"/>            
+            <Target action="show" conditionResult="true" option="radioDATMOTHER"/>                        
+            <Target action="show" conditionResult="true" option="radioPROD"/>
+            <Target action="show" conditionResult="true" option="radioQC"/>            
+            <Target action="show" conditionResult="true" option="radioDATLCOTHER"/>                        
+			<!--Options to disable respective Radio Buttons-->
+            <Target action="hide" conditionResult="false" option="radioSASAUTO"/>
+            <Target action="hide" conditionResult="false" option="radioUPDATED"/>
+            <Target action="hide" conditionResult="false" option="radioSRDMT"/>
+            <Target action="hide" conditionResult="false" option="radioSRDM"/>            
+            <Target action="hide" conditionResult="false" option="radioDATMOTHER"/>                        
+            <Target action="hide" conditionResult="false" option="radioPROD"/>
+            <Target action="hide" conditionResult="false" option="radioQC"/>            
+            <Target action="hide" conditionResult="false" option="radioDATLCOTHER"/>                        
+        </Dependency>
+
+        <Dependency condition="($radioDATAMOD == 'radioDATMOTHER')">
+            <Target action="show" conditionResult="true" option="textDATMOTHER"/>
+            <Target action="hide" conditionResult="false" option="textDATMOTHER"/>
+        </Dependency>
+
+        <Dependency condition="($radioDATALC == 'radioDATLCOTHER')">
+            <Target action="show" conditionResult="true" option="textDATLCOTHER"/>
+            <Target action="hide" conditionResult="false" option="textDATLCOTHER"/>
+        </Dependency>
+
+    </Dependencies>
+
+	
+  	<CodeTemplate>
+		<![CDATA[
+
+#if($radioONE == "radioCSDW")
+	%CSDW($textSTUDY);
+	PROC PRINT DATA=work.csdw(KEEP=/*<list of data location>*/);
+	RUN;
+#elseif($radioONE == "radioCSDWBA")
+	#if ($radioMAC == "radioSASAUTO" || $radioMAC == "radioUPDATED")
+	    #if($radioDATAMOD == "radioSRDMT")
+			#if($radioDATALC == "radioPROD")
+				%LET study_ba=/*<Your Study PROD CLINICAL BRIEF Data Location>*/;
+				%PUT &study_ba;
+			#elseif($radioDATALC == "radioQC")
+				%LET study_ba=/*<Your Study TEST CLINICAL BRIEF Data Location>*/;
+				%PUT &study_ba;
+			#elseif($radioDATALC == "radioDATLCOTHER")
+				%LET study_ba=/*<Your Study OTHER/SNAPSHOT CLINICAL BRIEF Data Location>*/;
+				%PUT &study_ba;
+		 	#end
+
+	    #elseif($radioDATAMOD == "radioSRDM")
+			#if($radioDATALC == "radioPROD")
+				%LET study_ba=/*<Your Study PROD CLINICAL DETAILED Data Location>*/;
+				%PUT &study_ba;
+			#elseif($radioDATALC == "radioQC")
+				%LET study_ba=/*<Your Study TEST CLINICAL DETAILED Data Location>*/;
+				%PUT &study_ba;
+			#elseif($radioDATALC == "radioDATLCOTHER")
+				%LET study_ba=/*<Your Study OTHER/SNAPSHOT CLINICAL DETAILED Data Location>*/;
+				%PUT &study_ba;
+		 	#end
+
+	    #elseif($radioDATAMOD == "radioDATMOTHER")
+			#if($radioDATALC == "radioPROD")
+				%LET study_ba=/*<Your Study PROD NONCRF Data Location>*/;
+				%PUT &study_ba;
+			#elseif($radioDATALC == "radioQC")
+				%LET study_ba=/*<Your Study TEST NONCRF Data Location>*/;
+				%PUT &study_ba;
+			#elseif($radioDATALC == "radioDATLCOTHER")
+				%LET study_ba=/*<Your Study OTHER/SNAPSHOT NONCRF Data Location>*/;
+				%PUT &study_ba;
+		 	#end
+    	#end
+	#end
+	
+	#if($radioMAC == "radioUPDATED")
+		%INCLUDE "/*<Updated macro location of utility>*/";
+		LIBNAME $textSTUDY = "&study_ba." ACCESS=READONLY;
+		
+		PROC SQL NOPRINT;
+			CREATE TABLE STUDY_META_DATA AS
+				SELECT "$textSTUDY" as study, memname as table, name as variable, label, type, length 
+				FROM DICTIONARY.COLUMNS
+				WHERE LIBNAME= '$textSTUDY'; /*'WORK';*/
+		QUIT;
+		
+	#elseif ($radioMAC == "radioSASAUTO")
+		LIBNAME $textSTUDY = "&study_ba." ACCESS=READONLY;
+
+		PROC SQL NOPRINT;
+			CREATE TABLE STUDY_META_DATA AS
+				SELECT "$textSTUDY" as study, memname as table, name as variable, label, type, length 
+				FROM DICTIONARY.COLUMNS
+				WHERE LIBNAME='$textSTUDY';
+		QUIT;
+
+
+	#end
+	
+	PROC SQL NOPRINT;
+		CREATE TABLE STUDY_DATASET AS
+			SELECT distinct table
+			FROM STUDY_META_DATA
+		;
+	QUIT;
+		
+	PROC PRINT DATA=work.STUDY_DATASET;
+	RUN;
+
+	PROC PRINT DATA=work.STUDY_META_DATA;
+	RUN;
+
+#end
+
+		]]>
+	</CodeTemplate>
+</Task>
