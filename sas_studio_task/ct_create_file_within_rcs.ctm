@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Task runNLS="never" schemaVersion="5.3">
+    <Registration>
+        <Name>Create File within RCS</Name>
+        <Description>This utility to create a report within RCS </Description>
+        <GUID> </GUID>
+        <Procedures>TBD</Procedures>
+        <Version>3.71</Version>
+        <Links>
+            <Link href="https://linux.die.net/man/1/rcsintro">RCS Introduction</Link>
+        </Links>
+        <Category>RCS</Category>
+    </Registration>
+    <Metadata>
+        <DataSources/>
+        <Options>
+            <Option defaultValue="" inputType="inputtext"
+                missingMessage="Missing Study Number." name="textSTUDY"
+                promptMessage="Enter Study Number." required="true">Study:
+			</Option>
+            <Option defaultValue="test_file" inputType="inputtext"
+                missingMessage="Missing Report File Name." name="textRFNAME"
+                promptMessage="Enter Report File Name." required="true">Report File Name:
+			</Option>
+            <Option defaultValue="Test File" inputType="inputtext"
+                missingMessage="Missing Report Description." name="textRDESC"
+                promptMessage="Enter Report Description." required="true">Report Description:
+			</Option>
+            <Option defaultValue="Table 1" inputType="inputtext"
+                missingMessage="Missing Table Name." name="textTABNAM"
+                promptMessage="Enter Table Name." required="true">Table Name:
+			</Option>
+            <Option defaultValue="1" inputType="inputtext"
+                missingMessage="Missing Table Number." name="textTABNUM"
+                promptMessage="Enter Table Number." required="true">Table Number:
+			</Option>
+            <Option defaultValue="Tue May 18 05:01:29 EDT 2021" inputType="inputtext"
+                missingMessage="Missing Todays Date and Time." name="textDATE"
+                promptMessage="Enter Todays Date and Time." required="true">Todays Date and Time:
+			</Option>
+            <Option defaultValue="<Your User ID>" inputType="inputtext"
+                missingMessage="Missing UserID." name="textUSER"
+                promptMessage="Enter UserID." required="true">User ID:
+			</Option>
+            
+        </Options>
+    </Metadata>
+    <UI>
+        <OptionItem option="textSTUDY"/>
+        <OptionItem option="textRFNAME"/>
+        <OptionItem option="textRDESC"/>
+        <OptionItem option="textTABNAM"/>
+        <OptionItem option="textTABNUM"/>
+        <OptionItem option="textDATE"/>
+        <OptionItem option="textUSER"/>        
+    </UI>
+    <Dependencies>
+    </Dependencies>
+    <CodeTemplate><![CDATA[
+
+%LET i_study= $textSTUDY;
+%LET file_name = $textRFNAME;
+%LET drvrname=%BQUOTE(%SYSFUNC(compress('DRVRNAME^test_file.sas01')));
+    
+/*Step 1: Create TEST file within RCS*/
+FILENAME totfile "/home/<USER_ID>/&file_name..sas02";
+
+DATA _null_;
+ FILE totfile;
+
+	PUT 'DESC^$textRDESC';
+	PUT 'RPTTYPE^';
+	PUT 'TABNO^$textTABNAM';
+	PUT 'TABNUM^$textTABNUM';
+	PUT 'PAGESTYL^LANDSCAPE';
+	PUT 'SOURCEDA^';
+	PUT 'INPUTDA^';
+	PUT 'TITLE1^&tabno';
+	PUT 'TITLE2^&proj Protocol &prot';
+	PUT 'TITLE3^';
+	PUT 'TITLE4^';
+	PUT 'TITLE5^';
+	PUT 'TITLE6^';
+	PUT 'TITLE7^';
+	PUT 'TITLE8^';
+	PUT 'TITLE9^';
+	PUT 'TITLE10^';
+	PUT 'FOOT1^';
+	PUT 'FOOT2^';
+	PUT 'FOOT3^';
+	PUT 'FOOT4^';
+	PUT 'FOOT5^';
+	PUT 'FOOT6^';
+	PUT 'FOOT7^';
+	PUT 'FOOT8^';
+	PUT 'FOOT9^';
+	PUT &drvrname.;;
+	PUT 'REPREV^$Revision: 1.1 $ $Date: 2021/04/22 08:56:35 $';
+RUN;
+
+/*Step 1a: Check-in TEST file to RCS*/
+X ci -u -m'User Comment' /home/<USER_ID>/&file_name..tot;
+
+/*Step 2: Create log file for TEST file which will be created*/
+FILENAME totlog "/home/<USER_ID>/gui/&file_name..log";
+DATA _null_;
+ FILE totlog;
+ PUT '$textDATE';
+ PUT 'Created Report ($textUSER)[$textDATE]';
+RUN;
+
+/*Step 2a: Check-in TEST log file to RCS*/
+X ci -u -m'Created using SAS Task' /home/<USER_ID>/gui/&file_name..sas02;
+
+/*Step 3: Check-out reports.meta*/
+X co -l /home/<USER_ID>/gui/gui/reports.meta;
+
+X echo &file_name..tot >> /home/<USER_ID>/gui/reports.meta;
+
+X ci -u -m'Created using SAS Task' /home/<USER_ID>/reports.meta;
+
+/*Step 4: Create SAS AutoExec File*/
+FILENAME sasdrvr "/home/<USER_ID>/program/&file_name..sas01";
+DATA _null_;
+ FILE sasdrvr;
+ PUT ' %include TEMP;';
+ PUT ' %$textRFNAME;';
+RUN;
+
+/*Step 4a: Check-in SAS AutoExec to RCS*/
+X ci -u -m'Created using SAS Task' /home/<USER_ID>/program/&file_name..sas01;
+
+/*STEP 5: Test Macro Creation*/
+FILENAME sasmac "/home/<USER_ID>/macros/&file_name..sas";;
+DATA _NULL_;
+	FILE sasmac;
+ PUT '%macro $textRFNAME;';
+
+PUT '/****************************************************************************** ';
+ PUT '*   If this module is a report generator, place this proc printto just above  * ';
+ PUT '*   the point where you are beginning to write out the report/table file.     * ';
+ PUT '*   &outfile is derived from the name of the TOT file and is automatically    * ';
+ PUT '*   populated by the system at runtime.                                       * ';
+ PUT '******************************************************************************/ ';
+ PUT '%let l_pp_study =  $textSTUDY; ';
+ PUT '%inc "/home/<USER_ID>/cdisc3_0/program/prod/run_file.sas"; ';
+
+ PUT '%titles; ';
+ PUT '%ftnote; ';
+
+ PUT 'data dummy; text="Check OUTPUT Drive (home>>network>>outputfiles>>pdfoutput) for Test output"; ';
+ PUT 'proc report data=dummy nowd; column text; run; ';
+ PUT '/****************************************************************************** ';
+     PUT '%mend closes your macro definition. ';
+ PUT '******************************************************************************/ ';
+ PUT '%mend; ';
+
+RUN;
+
+/*Step 5a: Check-in Test macro to RCS*/
+X ci -u -m'Created using SAS Task' /home/<USER_ID>/macros/&file_name..sas;
+
+/*Step 6: Upating meta file*/
+X co -l /home/<USER_ID>/tools/metadata.mfile;
+
+X echo &file_name..sas^titles.sas ftnote.sas >> /home/<USER_ID>/tools/metadata.mfile;
+X echo &file_name..sas01^&file_name..sas >> /home/<USER_ID>/tools/metadata.mfile;
+
+X ci -u -m'Created using SAS Task' /home/<USER_ID>/tools/tools/metadata.mfile;
+
+		]]></CodeTemplate>
+</Task>
